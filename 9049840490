@@ -1,0 +1,410 @@
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+local u1 = tick()
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/blooodlines/libs/main/orion')))()
+local Window = OrionLib:MakeWindow({
+    Name = "AstralHook | Sonic Speed Simulator",
+    HidePremium = false,
+    SaveConfig = false,
+    IntroEnabled = true,
+    IntroText = "Welcome to AstralHook."
+})
+local LocalPlayer = game:GetService("Players").LocalPlayer
+local CurrentZone = LocalPlayer:GetAttribute("ZoneName")
+LocalPlayer:GetAttributeChangedSignal("ZoneName"):Connect(function(NewZone)
+    task.delay(3, function()
+        CurrentZone = tostring(NewZone)
+    end)
+end)
+local Map = game:GetService("Workspace").Map
+local WorldCurrencies = workspace:WaitForChild("World Currencies")
+local Destructibles = Map.Objects:WaitForChild("Destructibles")
+local Objects = workspace[CurrentZone].Objects
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Knit = ReplicatedStorage.Knit
+local Services = Knit.Services
+for _, v in pairs(getconnections(LocalPlayer.Idled)) do
+    v:Disable()
+end
+local Tab = Window:MakeTab({
+    Name = "Main",
+    Icon = "rbxassetid://4370345144"
+})
+local TabMis = Window:MakeTab({
+    Name = "Miscellaneous",
+    Icon = "rbxassetid://4483362748"
+})
+local TabPets = Window:MakeTab({
+    Name = "Pets",
+    Icon = "rbxassetid://3610237052"
+})
+local TabEvent = Window:MakeTab({
+    Name = "Events",
+    Icon = "rbxassetid://4483346149"
+})
+local TabCred = Window:MakeTab({
+    Name = "Credits",
+    Icon = "rbxassetid://6961018885"
+})
+local Section1 = Tab:AddSection({
+    Name = "Farming"
+})
+local Section2 = TabMis:AddSection({
+    Name = "Miscellaneous"
+})
+local Section3 = TabEvent:AddSection({
+    Name = "Badniks"
+})
+local Section4 = TabEvent:AddSection({
+    Name = "Tornado Assault"
+})
+local Section5 = TabEvent:AddSection({
+    Name = "Green Reef"
+})
+local Section6 = TabEvent:AddSection({
+    Name = "Freestyle Riders"
+})
+local Section7 = TabEvent:AddSection({
+    Name = "Metal City"
+})
+local Section8 = TabEvent:AddSection({
+    Name = "Snowventures"
+})
+OrionLib:MakeNotification({
+    Name = "AstralHook",
+    Content = "Welcome to AstralHook.",
+    Image = "rbxassetid://4370341699",
+    Time = 5
+})
+getgenv().State = nil
+Section1:AddDropdown({
+    Name = "Auto Collect State",
+    Default = "Idle",
+    Options = { "Idle", "Hoverboard" },
+    Callback = function(S)
+        State = S
+    end
+})
+local Controllers = game:GetService("ReplicatedFirst").Client.Controllers
+local Character = ReplicatedStorage.Shared.Modules.Character
+local CharacterController = require(Controllers.Character.CharacterController)
+local GetCharacter = CharacterController:GetCharacter()
+function u3(v1)
+    if not v1 then
+        return error("v1 is nil or either not found.")
+    end
+    GetCharacter:SetState(require(Character.State[State]).new(GetCharacter))
+	GetCharacter.CFrame = v1.CFrame
+end
+Section1:AddToggle({
+    Name = "Auto Collect Everything",
+    Default = false,
+    Callback = function(Value0)
+        getgenv().AutoCollect = Value0
+        while AutoCollect do task.wait()
+            for _, v in next, WorldCurrencies:GetChildren() do
+                if v and v.PrimaryPart then
+                    u3(v.PrimaryPart)
+                end
+            end
+        end
+    end
+})
+workspace.Terrain.ChildAdded:Connect(function(v2)
+    if v2:IsA("ParticleEmitter") then
+	    v2:Destroy()
+    end
+end)
+local DestructibleService = Services.DestructibleService
+local ProcessDestructible = DestructibleService.RE.ProcessDestructible
+Section1:AddToggle({
+    Name = "Auto Pop Balloons & Crates",
+    Default = false,
+    Callback = function(Value1)
+        getgenv().AutoDestructibles = Value1
+        while AutoDestructibles do task.wait(0.3)
+            for _, v in next, Destructibles:GetChildren() do
+                if v:FindFirstChild("base").DestroyEffect:FindFirstChild("pop") or v:FindFirstChild("base").DestroyEffect:FindFirstChild("dus") and v then
+                    ProcessDestructible:FireServer(v.Name)
+                    v:Destroy()
+                end
+            end
+        end
+    end
+})
+Section1:AddToggle({
+    Name = "Auto Rebirth",
+    Default = false,
+    Callback = function(Value2)
+        getgenv().AutoRebirth = Value2
+        while AutoRebirth do task.wait(3)
+            Services.LevelingService.RF.AttemptRebirth:InvokeServer()
+        end
+    end
+})
+local Section = Tab:AddSection({
+    Name = "Collectables"
+})
+local CharacterSharPickup = Services.CharacterShardService.RE.CharacterShardPickup
+Section:AddButton({
+    Name = "Collect Tails's Wrenches",
+    Callback = function()
+        for _, v in next, workspace:GetDescendants() do
+            if v.Name == "Card" and v:FindFirstChild("Attachment").Shine and v then
+                CharacterShardPickup:FireServer("mechanic tails", v.Parent.Name, true)
+            end
+        end
+    end
+})
+local ZoneService = Services.ZoneService
+local SpinWheelService = Services.SpinWheelService
+local FinishObby = ZoneService.RF.FinishObby
+local RequestTeleportToZone = ZoneService.RF.RequestTeleportToZone
+local RequestFreeSpin = SpinWheelService.RF.RequestFreeSpin
+Section2:AddToggle({
+    Name = "Auto Complete Obbys",
+    Default = false,
+    Callback = function(Value3)
+        getgenv().AutoCompleteObbys = Value3
+        while AutoCompleteObbys do task.wait(0.2)
+            RequestTeleportToZone:InvokeServer("Green Hill Obby 1")
+            task.wait(0.015)
+            ZoneService.RE.ZoneLoaded:FireServer("Green Hill Obby 1")
+            task.wait(0.015)
+            FinishObby:InvokeServer("Green Hill Obby 1", true)
+            RequestFreeSpin:InvokeServer("GreenHill1")
+            task.wait(0.15)
+            RequestTeleportToZone:InvokeServer("Green Hill Obby 2")
+            task.wait(0.015)
+            ZoneService.RE.ZoneLoaded:FireServer("Green Hill Obby 2")
+            task.wait(0.015)
+            FinishObby:InvokeServer("Green Hill Obby 2", true)
+            task.wait(0.015)
+            RequestFreeSpin:InvokeServer("GreenHill2")
+            task.wait(0.15)
+            RequestTeleportToZone:InvokeServer("Green Hill Obby 3")
+            task.wait(0.015)
+            ZoneService.RE.ZoneLoaded:FireServer("Green Hill Obby 3")
+            task.wait(0.015)
+            FinishObby:InvokeServer("Green Hill Obby 3", true)
+            task.wait(0.15)
+            RequestFreeSpin:InvokeServer("GreenHill3")
+        end
+    end
+})
+local CompleteZoneObby = ZoneService.RF.CompleteZoneObby
+Section2:AddButton({
+    Name = "Complete All World Obbys",
+    Callback = function()
+        RequestTeleportToZone:InvokeServer("Lost Valley Obby", "Green Hill Exit")
+        CompleteZoneObby:InvokeServer()
+        task.wait(0.5)
+        RequestTeleportToZone:InvokeServer("Emerald Hill Obby", "Lost Valley Exit")
+        CompleteZoneObby:InvokeServer()
+        task.wait(0.5)
+        RequestTeleportToZone:InvokeServer("Snow Valley Obby", "Emerald Hill Exit")
+        CompleteZoneObby:InvokeServer()
+        task.wait(0.5)
+        RequestTeleportToZone:InvokeServer("Hill Top Zone Obby", "Snow Valley Exit")
+        CompleteZoneObby:InvokeServer()
+    end
+})
+local RequestUnlockCharacter = Services.CharacterService.RE.RequestUnlockCharacter
+TabMis:AddButton({
+    Name = "Unlock All Characters",
+    Callback = function()
+        RequestUnlockCharacter:FireServer("sonic")
+        task.wait(0.1)
+        RequestTeleportToZone:InvokeServer("Lost Valley")
+        RequestUnlockCharacter:FireServer("tails")
+        task.wait(0.1)
+        RequestTeleportToZone:InvokeServer("Emerald Hill")
+        RequestUnlockCharacter:FireServer("knuckles")
+    end
+})
+TabMis:AddButton({
+    Name = "Claim PlayTime Rewards",
+    Callback = function()
+        for i = 1, 12 do
+            Services.GratitudeService.RF.AcquireReward:InvokeServer(i)
+        end
+    end
+})
+Section3:AddToggle({
+    Name = "Auto Explode World Badniks ",
+    Default = false,
+    Callback = function(Value4)
+        getgenv().AutoExplodeBadniks = Value4
+        while AutoExplodeBadniks do task.wait(0.5)
+            for _, v in next, Destructibles:GetChildren() do
+                if v then
+                    ProcessDestructible:FireServer(v.Name)
+                    v:Destroy()
+                end
+            end
+        end
+    end
+})
+Section4:AddToggle({
+    Name = "Auto Win Tornado Assault Race",
+    Default = false,
+    Callback = function(Value5)
+        getgenv().AutoWinTornadoRace = Value5
+        while AutoWinTornadoRace do task.wait(0.015)
+            RequestTeleportToZone:InvokeServer("TornadoAssault")
+            task.wait(0.015)
+            ZoneService.RE.ZoneLoaded:FireServer("TornadoAssault")
+            task.wait(0.015)
+            ZoneService.RF.FinishObby:InvokeServer("TornadoAssault", true)
+            RequestFreeSpin:InvokeServer("TornadoAssault")
+        end
+    end
+})
+Section5:AddButton({
+    Name = "Find Froggy",
+    Callback = function()
+        if CurrentZone == "Green Reef" then
+            Services.FindFroggyService.RF.AttemptFroggyPickup:InvokeServer()
+        end
+    end
+})
+Section6:AddToggle({
+    Name = "Auto Collect Air Capsules",
+    Default = false,
+    Callback = function(Value6)
+        getgenv().AutoCollectCapsules = Value6
+        while AutoCollectCapsules do task.wait(0.5)
+            for _, v in next, Destructibles:GetChildren() do
+                if v then
+                    ProcessDestructible:FireServer(v.Name)
+                    v:Destroy()
+                end
+            end
+        end
+    end
+})
+local RidersScoringService = Services.RidersScoringService
+local RF = RidersScoringService.RF
+Section6:AddToggle({
+    Name = "Auto Hit Hoops",
+    Default = false,
+    Callback = function(Value7)
+        getgenv().AutoHitHoops = Value7
+        while AutoHitHoops do task.wait(0.25)
+            RF.HitHoop:InvokeServer()
+        end
+    end
+})
+Section7:AddDropdown({
+    Name = "Character State",
+    Default = "Idle",
+    Options = { "Idle", "Hoverboard" },
+    Callback = function(S)
+        State = S
+    end
+})
+Section7:AddToggle({
+    Name = "Auto Perform Boost",
+    Default = false,
+    Callback = function(Value8)
+        getgenv().AutoPerformBoost = Value8
+        while AutoPerformBoost do task.wait(0.3)
+            RF.PerformBoost:InvokeServer()
+        end
+    end
+})
+Section7:AddToggle({
+    Name = "Auto Collect Scrap Metal",
+    Default = false,
+    Callback = function(Value9)
+        getgenv().AutoCollectScrap = Value9
+        while AutoCollectScrap do task.wait()
+            for _, v in next, WorldCurrencies:GetChildren() do
+                if v:GetAttribute("EventName") and v and v.PrimaryPart then
+                    u3(v.PrimaryPart)
+                end
+            end
+        end
+    end
+})
+Section8:AddToggle({
+    Name = "Auto Collect Stickers",
+    Default = false,
+    Callback = function(Value10)
+        getgenv().Stickers = Value10
+        while Stickers do task.wait()
+            for _, v in next, WorldCurrencies:GetChildren() do
+                if v:GetAttribute("EventName") and v and v.PrimaryPart then
+                    u3(v.PrimaryPart)
+                end
+            end
+        end
+    end
+})
+TabPets:AddDropdown({
+    Name = "Choose Vending Machine",
+    Default = "1",
+    Options = { "GreenHill1", "GreenHill2", "GreenHill3", "GreenHill4", "GreenHill5", "GreenHill6", "GreenHill7", "SandyHill1", "EmeraldHill1", "EmeraldHill2", "SnowValley1", "HillTop1", "HillTop2", "HillTop3", "ChemicalPlant1", "ChemicalPlant2" },
+    Callback = function(Vending)
+        Vendor = Vending
+    end
+})
+TabPets:AddToggle({
+    Name = "Auto Open Selected Vending",
+    Default = false,
+    Callback = function(Value12)
+        getgenv().AutoOpenVending = Value12
+        while AutoOpenVending do task.wait(0.5)
+            Services.VendorService.RF.EggPurchased:InvokeServer(Vendor, 1, 0)
+        end
+    end
+})
+local DataController = require(Controllers.Player.DataController)
+TabPets:AddToggle({
+    Name = "Auto Combine Chaos",
+    Default = false,
+    Callback = function(Value13)
+        getgenv().AutoCombineChaos = Value13
+        while AutoCombineChaos do task.wait(3)
+            for i, v in pairs(DataController.Data.Pets) do
+                Services.PetService.RE.CombinePet:FireServer(i, v)
+            end
+        end
+    end
+})
+TabPets:AddToggle({
+    Name = "Auto Combine Trails",
+    Default = false,
+    Callback = function(Value14)
+        getgenv().AutoCombineTrails = Value14
+        while AutoCombineTrails do task.wait(3)
+            for i, v in pairs(DataController.Data.Trails) do
+                Services.TrailService.RE.CombineTrail:FireServer(i, v)
+            end
+        end
+    end
+})
+TabCred:AddLabel("Scripted by infinite#7302")
+TabCred:AddButton({
+    Name = "Copy Discord Server Link",
+    Callback = function()
+        setclipboard("https://discord.gg/ssaVPA6atd")
+        OrionLib:MakeNotification({
+            Name = "AstralHook",
+            Content = "Copied Discord Server Link to Clipboard.",
+            Image = "rbxassetid://4370317928",
+            Time = 2
+        })
+    end
+})
+TabCred:AddBind({
+    Name = "UI Toggle Keybind",
+    Default = Enum.KeyCode.RightShift,
+    Hold = false,
+    Callback = function()
+    end
+})
+OrionLib:Init()
+print("AstralHook took: ".. tick() - u1 .. " seconds to load.")
