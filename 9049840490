@@ -70,7 +70,7 @@ local Section7 = TabEvent:AddSection({
     Name = "Metal City"
 })
 local Section8 = TabEvent:AddSection({
-    Name = "Snowventures"
+    Name = "Jewel Rush"
 })
 OrionLib:MakeNotification({
     Name = "AstralHook",
@@ -330,14 +330,14 @@ Section7:AddToggle({
     end
 })
 Section8:AddToggle({
-    Name = "Auto Collect Stickers",
+    Name = "Auto Get Moonstones",
     Default = false,
     Callback = function(Value10)
-        getgenv().Stickers = Value10
-        while Stickers do task.wait()
-            for _, v in next, WorldCurrencies:GetChildren() do
-                if v:GetAttribute("EventName") and v and v.PrimaryPart then
-                    u3(v.PrimaryPart)
+        getgenv().Moonstones = Value10
+        while Moonstones do task.wait()
+            for _, v in next, Destructibles:GetChildren() do
+                if v:GetAttribute("DestructibleName") == "BurroBot" and v then
+                    ProcessDestructible:FireServer(v.Name)
                 end
             end
         end
