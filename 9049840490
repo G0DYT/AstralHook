@@ -198,12 +198,12 @@ TabPets:AddToggle({
     end
 })
 
-TabCred:AddLabel("Scripted by midsummernights#7302")
+TabCred:AddLabel("Scripted by @midsummernights")
 
 TabCred:AddButton({
     Name = "Copy Discord Server Link",
     Callback = function()
-        setclipboard("https://discord.gg/ssaVPA6atd")
+        setclipboard("https://discord.gg/naAGAeaUrD")
         OrionLib:MakeNotification({
             Name = "AstralHook",
             Content = "Copied Discord Server Link to Clipboard.",
