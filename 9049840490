@@ -1,21 +1,17 @@
-
 if not game:IsLoaded() then
-    game.Loaded:Wait()
+    game.Load:Wait()
 end
-
 local u1 = tick()
-
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/blooodlines/libs/main/orion')))()
-local Window = OrionLib:MakeWindow({
+local OrionLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/ttwizz/Roblox/master/Orion.lua", true))()
+local Window = OrionLib:MakeWindow( {
     Name = "AstralHook | Sonic Speed Simulator",
     HidePremium = false,
     SaveConfig = false,
     IntroEnabled = true,
     IntroText = "Welcome to AstralHook."
-})
-
+} )
 local LocalPlayer = game:GetService("Players").LocalPlayer
-local Map = game:GetService("Workspace").Map
+local Map = workspace:FindFirstChild("Map")
 local WorldCurrencies = workspace:WaitForChild("World Currencies")
 local Destructibles = Map.Objects:WaitForChild("Destructibles")
 local CurrentZone = LocalPlayer:GetAttribute("ZoneName")
@@ -25,98 +21,37 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Knit = ReplicatedStorage.Knit
 local Services = Knit.Services
 
-local Tab = Window:MakeTab({
+local Tab = Window:MakeTab( {
     Name = "Main",
     Icon = "rbxassetid://4370345144"
-})
-local TabMis = Window:MakeTab({
-    Name = "Miscellaneous",
-    Icon = "rbxassetid://4483362748"
-})
-local TabPets = Window:MakeTab({
+} )
+local TabPets = Window:MakeTab( {
     Name = "Pets",
     Icon = "rbxassetid://3610237052"
-})
-local TabEvent = Window:MakeTab({
+} )
+local TabEvent = Window:MakeTab( {
     Name = "Events",
     Icon = "rbxassetid://4483346149"
-})
-local TabCred = Window:MakeTab({
+} )
+local TabCred = Window:MakeTab( {
     Name = "Credits",
     Icon = "rbxassetid://6961018885"
 })
-
-local Section1 = Tab:AddSection({
-    Name = "Farming"
-})
-local Section2 = TabMis:AddSection({
-    Name = "Miscellaneous"
-})
-local Section3 = TabEvent:AddSection({
+local Section1 = TabEvent:AddSection({
     Name = "Badniks"
-})
-local Section7 = TabEvent:AddSection({
-    Name = "Metal City"
-})
-
+} )
 OrionLib:MakeNotification({
     Name = "AstralHook",
     Content = "Welcome to AstralHook.",
     Image = "rbxassetid://4370341699",
     Time = 5
-})
-
-getgenv().State = nil
-
-Section1:AddDropdown({
-    Name = "Auto Collect State",
-    Default = "Idle",
-    Options = { "Idle", "Hoverboard" },
-    Callback = function(S)
-        State = S
-    end
-})
+} )
 
 local Controllers = game:GetService("ReplicatedFirst").Client.Controllers
-local Character = ReplicatedStorage.Shared.Modules.Character
-local CharacterController = require(Controllers.Character.CharacterController)
-local GetCharacter = CharacterController:GetCharacter()
-
-function u3(v1)
-    if not v1 then
-        return error("v1 is nil or either not found.")
-    end
-
-    GetCharacter:SetState(require(Character.State[State]).new(GetCharacter))
-    GetCharacter.CFrame = v1.CFrame
-end
-
-Section1:AddToggle({
-    Name = "Auto Collect Everything",
-    Default = false,
-    Callback = function(Value0)
-        getgenv().AutoCollect = Value0
-        while AutoCollect do
-            task.wait()
-            for _, v in next, WorldCurrencies:GetChildren() do
-                if v and v.PrimaryPart then
-                    u3(v.PrimaryPart)
-                end
-            end
-        end
-    end
-})
-
-workspace.Terrain.ChildAdded:Connect(function(v2)
-    if v2:IsA("ParticleEmitter") then
-        v2:Destroy()
-    end
-end)
 
 local DestructibleService = Services.DestructibleService
 local ProcessDestructible = DestructibleService.RE.ProcessDestructible
-
-Section1:AddToggle({
+Section1:AddToggle( {
     Name = "Auto Rebirth",
     Default = false,
     Callback = function(Value2)
@@ -126,11 +61,10 @@ Section1:AddToggle({
             Services.SSLevelingService.RF.AttemptRebirth:InvokeServer()
         end
     end
-})
+} )
 
 local ZoneService = Services.ZoneService
-
-Section3:AddToggle({
+Section1:AddToggle( {
     Name = "Auto Explode World Badniks",
     Default = false,
     Callback = function(Value4)
@@ -145,18 +79,18 @@ Section3:AddToggle({
             end
         end
     end
-})
+} )
 
-TabPets:AddDropdown({
+TabPets:AddDropdown( {
     Name = "Choose Vending Machine",
     Default = "1",
     Options = { "GreenHill1", "GreenHill2", "GreenHill3", "GreenHill4", "GreenHill5", "GreenHill6", "GreenHill7", "SandyHill1", "EmeraldHill1", "EmeraldHill2", "SnowValley1", "HillTop1", "HillTop2", "HillTop3", "ChemicalPlant1", "ChemicalPlant2" },
     Callback = function(Vending)
         Vendor = Vending
     end
-})
+} )
 
-TabPets:AddToggle({
+TabPets:AddToggle( {
     Name = "Auto Open Selected Vending",
     Default = false,
     Callback = function(Value12)
@@ -166,11 +100,10 @@ TabPets:AddToggle({
             Services.VendorService.RF.EggPurchased:InvokeServer(Vendor, 1, 0)
         end
     end
-})
+} )
 
 local DataController = require(Controllers.Player.DataController)
-
-TabPets:AddToggle({
+TabPets:AddToggle( {
     Name = "Auto Combine Chaos",
     Default = false,
     Callback = function(Value13)
@@ -182,9 +115,9 @@ TabPets:AddToggle({
             end
         end
     end
-})
+} )
 
-TabPets:AddToggle({
+TabPets:AddToggle( {
     Name = "Auto Combine Trails",
     Default = false,
     Callback = function(Value14)
@@ -196,9 +129,9 @@ TabPets:AddToggle({
             end
         end
     end
-})
+} )
 
-TabCred:AddLabel("Scripted by @midsummernights")
+TabCred:AddLabel("Scripted by midsummernights#7302")
 
 TabCred:AddButton({
     Name = "Copy Discord Server Link",
@@ -209,18 +142,17 @@ TabCred:AddButton({
             Content = "Copied Discord Server Link to Clipboard.",
             Image = "rbxassetid://4370317928",
             Time = 2
-        })
+        } )
     end
-})
+} )
 
-TabCred:AddBind({
+TabCred:AddBind( {
     Name = "UI Toggle Keybind",
     Default = Enum.KeyCode.RightShift,
     Hold = false,
     Callback = function()
     end
-})
-
+} )
 OrionLib:Init()
 local loadTime = tick() - u1
 local formattedTime = string.format("%.1f", loadTime)
